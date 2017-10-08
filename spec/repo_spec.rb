@@ -15,8 +15,7 @@ describe 'Tests Praise library' do
 
   describe 'Repo information' do
     it 'HAPPY: should provide correct repo attributes' do
-      # repo = RepoPraise::Repo.from_github(CONFIG['gh_token'], USERNAME, REPO_NAME)
-      repo = RepoPraise::GithubAPI.new(GH_TOKEN, cache=RESPONSE)
+      repo = RepoPraise::GithubAPI.new(GH_TOKEN, cache: RESPONSE)
                                   .repo(USERNAME, REPO_NAME)
       _(repo.size).must_equal CORRECT['size']
       _(repo.git_url).must_equal CORRECT['git_url']
@@ -24,7 +23,7 @@ describe 'Tests Praise library' do
 
     it 'SAD: should raise exception on incorrect repo' do
       proc do
-        RepoPraise::GithubAPI.new(GH_TOKEN, cache=RESPONSE).repo('soumyaray', 'foobar')
+        RepoPraise::GithubAPI.new(GH_TOKEN, cache: RESPONSE).repo('soumyaray', 'foobar')
       end.must_raise RepoPraise::GithubAPI::Errors::NotFound
     end
 
@@ -37,7 +36,7 @@ describe 'Tests Praise library' do
 
   describe 'Contributor information' do
     before do
-      @repo = RepoPraise::GithubAPI.new(GH_TOKEN, cache=RESPONSE).repo(USERNAME, REPO_NAME)
+      @repo = RepoPraise::GithubAPI.new(GH_TOKEN, cache: RESPONSE).repo(USERNAME, REPO_NAME)
     end
 
     it 'HAPPY: should recognize owner' do

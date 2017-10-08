@@ -17,7 +17,7 @@ module RepoPraise
       404 => Errors::NotFound
     }.freeze
 
-    def initialize(token, cache = {})
+    def initialize(token, cache: {})
       @gh_token = token
       @cache = cache
     end
@@ -27,9 +27,9 @@ module RepoPraise
       repo_data = call_gh_url(repo_req_url).parse
       Repo.new(repo_data, self)
     end
-  
+
     def contributors(contributors_url)
-      contributors_data =  call_gh_url(contributors_url).parse
+      contributors_data = call_gh_url(contributors_url).parse
       contributors_data.map { |account_data| Contributor.new(account_data) }
     end
 
