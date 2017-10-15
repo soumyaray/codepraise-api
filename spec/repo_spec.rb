@@ -15,7 +15,7 @@ describe 'Tests Praise library' do
 
   describe 'Repo information' do
     it 'HAPPY: should provide correct repo attributes' do
-      repo = RepoPraise::GithubAPI.new(GH_TOKEN, cache: RESPONSE)
+      repo = RepoPraise::GithubAPI.new(GH_TOKEN)
                                   .repo(USERNAME, REPO_NAME)
       _(repo.size).must_equal CORRECT['size']
       _(repo.git_url).must_equal CORRECT['git_url']
@@ -23,20 +23,20 @@ describe 'Tests Praise library' do
 
     it 'SAD: should raise exception on incorrect repo' do
       proc do
-        RepoPraise::GithubAPI.new(GH_TOKEN, cache: RESPONSE).repo('soumyaray', 'foobar')
+        RepoPraise::GithubAPI.new(GH_TOKEN).repo('soumyaray', 'foobar')
       end.must_raise RepoPraise::GithubAPI::Errors::NotFound
     end
 
-    # it 'SAD: should raise exception when unauthorized' do
-    #   proc do
-    #     RepoPraise::Repo.from_github('bad_token', 'soumyaray', 'foobar')
-    #   end.must_raise RepoPraise::GithubAPI::Errors::Unauthorized
-    # end
+    it 'SAD: should raise exception when unauthorized' do
+      proc do
+        RepoPraise::GithubAPI.new('BAD_TOKEN').repo('soumyaray', 'foobar')
+      end.must_raise RepoPraise::GithubAPI::Errors::Unauthorized
+    end
   end
 
   describe 'Contributor information' do
     before do
-      @repo = RepoPraise::GithubAPI.new(GH_TOKEN, cache: RESPONSE).repo(USERNAME, REPO_NAME)
+      @repo = RepoPraise::GithubAPI.new(GH_TOKEN).repo(USERNAME, REPO_NAME)
     end
 
     it 'HAPPY: should recognize owner' do
