@@ -24,17 +24,17 @@ namespace :quality do
   CODE = 'lib/'
 
   desc 'run all quality checks'
-  task all: [:rubocop, :flog, :reek]
+  task all: %i[rubocop reek flog]
 
   task :rubocop do
     sh 'rubocop'
   end
 
-  task :flog do
-    sh "flog #{CODE}"
-  end
-
   task :reek do
     sh "reek #{CODE}"
+  end
+
+  task :flog do
+    sh "flog #{CODE}"
   end
 end
