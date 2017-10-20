@@ -23,31 +23,39 @@ describe 'Tests Praise library' do
 
   describe 'Repo information' do
     it 'HAPPY: should provide correct repo attributes' do
-      repo = RepoPraise::GithubApi.new(GH_TOKEN).repo(USERNAME, REPO_NAME)
+      api = RepoPraise::Github::Api.new(GH_TOKEN)
+      repo_mapper = RepoPraise::Github::RepoMapper.new(api)
+      repo = repo_mapper.load(USERNAME, REPO_NAME)
       _(repo.size).must_equal CORRECT['size']
       _(repo.git_url).must_equal CORRECT['git_url']
     end
 
     it 'SAD: should raise exception on incorrect repo' do
       proc do
-        RepoPraise::GithubApi.new(GH_TOKEN).repo('soumyaray', 'foobar')
-      end.must_raise RepoPraise::Errors::NotFound
+        api = RepoPraise::Github::Api.new(GH_TOKEN)
+        repo_mapper = RepoPraise::Github::RepoMapper.new(api)
+        sad_repo = repo_mapper.load(USERNAME, 'foobar')
+      end.must_raise RepoPraise::Github::Api::Errors::NotFound
     end
 
     it 'SAD: should raise exception when unauthorized' do
       proc do
-        RepoPraise::GithubApi.new('bad_token').repo(USERNAME, REPO_NAME)
-      end.must_raise RepoPraise::Errors::Unauthorized
+        sad_api = RepoPraise::Github::Api.new('bad_token')
+        repo_mapper = RepoPraise::Github::RepoMapper.new(sad_api)
+        repo = repo_mapper.load(USERNAME, REPO_NAME)
+      end.must_raise RepoPraise::Github::Api::Errors::Unauthorized
     end
   end
 
   describe 'Contributor information' do
     before do
-      @repo = RepoPraise::GithubApi.new(GH_TOKEN).repo(USERNAME, REPO_NAME)
+      api = RepoPraise::Github::Api.new(GH_TOKEN)
+      repo_mapper = RepoPraise::Github::RepoMapper.new(api)
+      @repo = repo_mapper.load(USERNAME, REPO_NAME)
     end
 
     it 'HAPPY: should recognize owner' do
-      _(@repo.owner).must_be_kind_of RepoPraise::Contributor
+      _(@repo.owner).must_be_kind_of RepoPraise::Entity::Contributor
     end
 
     it 'HAPPY: should identify owner' do
