@@ -5,31 +5,35 @@ module RepoPraise
   module Github
     # Data Mapper for Github contributors
     class ContributorMapper
-      def initialize(data_source)
-        @data_source = data_source
+      def initialize(gateway)
+        @gateway = gateway
       end
 
       def load_several(url)
-        contribs_data = @data_source.contributors_data(url)
+        contribs_data = @gateway.contributors_data(url)
         contribs_data.map do |contributor_data|
-          build_entity(contributor_data)
+          ContributorMapper.build_entity(contributor_data)
         end
       end
 
-      def build_entity(contributor_data)
-        mapper = DataMap.new(contributor_data)
-
-        Entity::Contributor.new(
-          username: mapper.username,
-          email: mapper.email
-        )
+      def self.build_entity(contributor_data)
+        DataMapper.new(contributor_data).build_entity
       end
 
       # Extracts entity specific elements from data structure
-      class DataMap
+      class DataMapper
         def initialize(contributor_data)
           @contributor_data = contributor_data
         end
+
+        def build_entity
+          Entity::Contributor.new(
+            username: username,
+            email: email
+          )
+        end
+
+        private
 
         def username
           @contributor_data['login']

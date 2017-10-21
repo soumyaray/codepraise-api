@@ -10,12 +10,6 @@ require 'minitest/rg'
 require 'vcr'
 require 'webmock'
 
-# require_relative '../lib/github_api.rb'
-# require_relative '../lib/entities/repo.rb'
-# require_relative '../lib/entities/contributor.rb'
-# require_relative '../lib/mappers/contributor_mapper.rb'
-# require_relative '../lib/mappers/repo_mapper.rb'
-
 require_relative '../lib/init.rb'
 
 USERNAME = 'soumyaray'.freeze

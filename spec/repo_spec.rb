@@ -34,15 +34,15 @@ describe 'Tests Praise library' do
       proc do
         api = RepoPraise::Github::Api.new(GH_TOKEN)
         repo_mapper = RepoPraise::Github::RepoMapper.new(api)
-        sad_repo = repo_mapper.load(USERNAME, 'foobar')
+        repo_mapper.load(USERNAME, 'sad_repo_name')
       end.must_raise RepoPraise::Github::Api::Errors::NotFound
     end
 
     it 'SAD: should raise exception when unauthorized' do
       proc do
-        sad_api = RepoPraise::Github::Api.new('bad_token')
+        sad_api = RepoPraise::Github::Api.new('sad_token')
         repo_mapper = RepoPraise::Github::RepoMapper.new(sad_api)
-        repo = repo_mapper.load(USERNAME, REPO_NAME)
+        repo_mapper.load(USERNAME, REPO_NAME)
       end.must_raise RepoPraise::Github::Api::Errors::Unauthorized
     end
   end

@@ -1,15 +1,18 @@
 # frozen_string_literal: false
 
+require 'dry-struct'
+
 module RepoPraise
   module Entity
-    # Domain entity object for any git repos
-    class Contributor
-      attr_accessor :username, :email
+    # Add dry types to Entity module
+    module Types
+      include Dry::Types.module
+    end
 
-      def initialize(username: nil, email: nil)
-        @username = username
-        @email = email
-      end
+    # Contributor entity objects
+    class Contributor < Dry::Struct
+      attribute :username, Types::Strict::String
+      attribute :email, Types::Strict::String.optional
     end
   end
 end

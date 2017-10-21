@@ -6,31 +6,33 @@ module RepoPraise
   module Github
     # Repository object for Github's git repos
     class RepoMapper
-      def initialize(data_source)
-        @data_source = data_source
+      def initialize(gateway)
+        @gateway = gateway
       end
 
       def load(owner_name, repo_name)
-        repo_data = @data_source.repo_data(owner_name, repo_name)
+        repo_data = @gateway.repo_data(owner_name, repo_name)
         build_entity(repo_data)
       end
 
       def build_entity(repo_data)
-        mapper = DataMap.new(repo_data, @data_source)
-
-        RepoPraise::Entity::Repo.new(
-          size: mapper.size,
-          owner: mapper.owner,
-          git_url: mapper.git_url,
-          contributors: mapper.contributors
-        )
+        DataMapper.new(repo_data, @gateway).build_entity
       end
 
       # Extracts entity specific elements from data structure
-      class DataMap
-        def initialize(repo_data, data_source)
+      class DataMapper
+        def initialize(repo_data, gateway)
           @repo_data = repo_data
-          @contributor_mapper = ContributorMapper.new(data_source)
+          @contributor_mapper = ContributorMapper.new(gateway)
+        end
+
+        def build_entity
+          Entity::Repo.new(
+            size: size,
+            owner: owner,
+            git_url: git_url,
+            contributors: contributors
+          )
         end
 
         def size
@@ -38,7 +40,7 @@ module RepoPraise
         end
 
         def owner
-          @contributor_mapper.build_entity(@repo_data['owner'])
+          ContributorMapper.build_entity(@repo_data['owner'])
         end
 
         def git_url

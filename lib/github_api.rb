@@ -39,11 +39,11 @@ module RepoPraise
 
       def repo_data(username, repo_name)
         repo_req_url = Api.repo_path([username, repo_name].join('/'))
-        repo_data = call_gh_url(repo_req_url).parse
+        call_gh_url(repo_req_url).parse
       end
 
       def contributors_data(contributors_url)
-        contributors_data = call_gh_url(contributors_url).parse
+        call_gh_url(contributors_url).parse
       end
 
       def self.repo_path(path)
@@ -54,7 +54,8 @@ module RepoPraise
 
       def call_gh_url(url)
         response = HTTP.headers('Accept' => 'application/vnd.github.v3+json',
-                                'Authorization' => "token #{@gh_token}").get(url)
+                                'Authorization' => "token #{@gh_token}")
+                       .get(url)
         Response.new(response).response_or_error
       end
     end
