@@ -2,9 +2,9 @@
 
 require_relative 'contributor_mapper.rb'
 
-module RepoPraise
+module CodePraise
   module Github
-    # Repository object for Github's git repos
+    # Data Mapper object for Github's git repos
     class RepoMapper
       def initialize(gateway)
         @gateway = gateway
@@ -27,7 +27,7 @@ module RepoPraise
         end
 
         def build_entity
-          Entity::Repo.new(
+          CodePraise::Entity::Repo.new(
             size: size,
             owner: owner,
             git_url: git_url,

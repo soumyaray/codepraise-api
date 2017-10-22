@@ -2,7 +2,7 @@
 
 require 'http'
 
-module RepoPraise
+module CodePraise
   module Github
     # Gateway class to talk to Github API
     class Api

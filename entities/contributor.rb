@@ -2,14 +2,9 @@
 
 require 'dry-struct'
 
-module RepoPraise
+module CodePraise
   module Entity
-    # Add dry types to Entity module
-    module Types
-      include Dry::Types.module
-    end
-
-    # Contributor entity objects
+    # Domain entity object for git contributors
     class Contributor < Dry::Struct
       attribute :username, Types::Strict::String
       attribute :email, Types::Strict::String.optional

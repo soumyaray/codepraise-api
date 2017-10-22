@@ -1,6 +1,6 @@
 # frozen_string_literal: false
 
-module RepoPraise
+module CodePraise
   # Provides access to contributor data
   module Github
     # Data Mapper for Github contributors

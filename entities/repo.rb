@@ -2,7 +2,7 @@
 
 require_relative 'contributor.rb'
 
-module RepoPraise
+module CodePraise
   module Entity
     # Domain entity object for any git repos
     class Repo < Dry::Struct
