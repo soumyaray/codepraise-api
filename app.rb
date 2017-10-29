@@ -23,7 +23,7 @@ module CodePraise
           routing.on 'repo', String, String do |ownername, reponame|
             # GET /api/v0.1/repo/:ownername/:reponame request
             routing.get do
-              repo = Database::ORM[Entity::Repo]
+              repo = Repository::For[Entity::Repo]
                      .find_full_name(ownername, reponame)
 
               routing.halt(404, error: 'Repository not found') unless repo
@@ -33,13 +33,15 @@ module CodePraise
             # POST '/api/v0.1/repo/:ownername/:reponame
             routing.post do
               begin
-                github_repo = Github::RepoMapper.new(app.config)
-                repo = github_repo.load(ownername, reponame)
+                repo = Github::RepoMapper.new(app.config)
+                                         .load(ownername, reponame)
               rescue StandardError
                 routing.halt(404, error: "Repo not found")
               end
 
-              stored_repo = Database::ORM[Entity::Repo].find_or_create(repo)
+              stored_repo = Repository::For[repo.class].find_or_create(repo)
+              response.status = 201
+              response['Location'] = "/api/v0.1/repo/#{ownername}/#{reponame}"
               stored_repo.to_h
             end
           end

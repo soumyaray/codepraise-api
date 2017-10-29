@@ -1,3 +1,6 @@
 # frozen_string_literal: false
 
-require_relative 'db/orm/init.rb'
+folders = %w[github database/orm]
+folders.each do |folder|
+  require_relative "#{folder}/init.rb"
+end

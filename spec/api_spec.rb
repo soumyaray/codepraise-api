@@ -22,20 +22,37 @@ describe 'Tests Praise library' do
       Rake::Task['db:reset'].invoke
     end
 
-    it 'HAPPY: should retrieve and store repo and collaborators' do
-      post "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
-      _(last_response.status).must_equal 200
-      repo_data = JSON.parse last_response.body
-      _(repo_data.size).must_be :>, 0
+    describe "POSTting to create entities from Github" do
+      it 'HAPPY: should retrieve and store repo and collaborators' do
+        post "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
+        _(last_response.status).must_equal 201
+        _(last_response.header['Location'].size).must_be :>, 0
+        repo_data = JSON.parse last_response.body
+        _(repo_data.size).must_be :>, 0
+      end
+
+      it 'SAD: should report error if no Github repo found' do
+        post "#{API_VER}/repo/#{USERNAME}/sad_repo_name"
+        _(last_response.status).must_equal 404
+      end
     end
 
-    it 'HAPPY: should find stored repo and collaborators' do
-      post "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
+    describe "GETing database entities" do
+      before do
+        post "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
+      end
 
-      get "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
-      _(last_response.status).must_equal 200
-      repo_data = JSON.parse last_response.body
-      _(repo_data.size).must_be :>, 0
+      it 'HAPPY: should find stored repo and collaborators' do
+        get "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
+        _(last_response.status).must_equal 200
+        repo_data = JSON.parse last_response.body
+        _(repo_data.size).must_be :>, 0
+      end
+
+      it 'SAD: should report error if no database repo entity found' do
+        get "#{API_VER}/repo/#{USERNAME}/sad_repo_name"
+        _(last_response.status).must_equal 404
+      end
     end
   end
 end
