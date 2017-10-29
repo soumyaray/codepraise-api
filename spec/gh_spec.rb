@@ -8,7 +8,7 @@ describe 'Tests Praise library' do
   Econfig.env = 'development'
   Econfig.root = '.'
 
-  GH_TOKEN = config.gh_token
+  # GH_TOKEN = config.gh_token
   CORRECT = YAML.safe_load(File.read('spec/fixtures/gh_results.yml'))
   CASSETTE_FILE = 'github_api'.freeze
 
@@ -24,8 +24,7 @@ describe 'Tests Praise library' do
 
   describe 'Repo information' do
     it 'HAPPY: should provide correct repo attributes' do
-      api = CodePraise::Github::Api.new(GH_TOKEN)
-      repo_mapper = CodePraise::Github::RepoMapper.new(api)
+      repo_mapper = CodePraise::Github::RepoMapper.new(app.config)
       repo = repo_mapper.load(USERNAME, REPO_NAME)
       _(repo.size).must_equal CORRECT['size']
       _(repo.git_url).must_equal CORRECT['git_url']
@@ -33,16 +32,16 @@ describe 'Tests Praise library' do
 
     it 'SAD: should raise exception on incorrect repo' do
       proc do
-        api = CodePraise::Github::Api.new(GH_TOKEN)
-        repo_mapper = CodePraise::Github::RepoMapper.new(api)
+        repo_mapper = CodePraise::Github::RepoMapper.new(app.config)
         repo_mapper.load(USERNAME, 'sad_repo_name')
       end.must_raise CodePraise::Github::Api::Errors::NotFound
     end
 
     it 'SAD: should raise exception when unauthorized' do
       proc do
-        sad_api = CodePraise::Github::Api.new('sad_token')
-        repo_mapper = CodePraise::Github::RepoMapper.new(sad_api)
+        require 'ostruct'
+        sad_config = OpenStruct.new(gh_token: 'sad_token')
+        repo_mapper = CodePraise::Github::RepoMapper.new(sad_config)
         repo_mapper.load(USERNAME, REPO_NAME)
       end.must_raise CodePraise::Github::Api::Errors::Unauthorized
     end
@@ -50,8 +49,7 @@ describe 'Tests Praise library' do
 
   describe 'Collaborator information' do
     before do
-      api = CodePraise::Github::Api.new(GH_TOKEN)
-      repo_mapper = CodePraise::Github::RepoMapper.new(api)
+      repo_mapper = CodePraise::Github::RepoMapper.new(app.config)
       @repo = repo_mapper.load(USERNAME, REPO_NAME)
     end
 

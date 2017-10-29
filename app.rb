@@ -19,24 +19,24 @@ module CodePraise
       routing.on 'api' do
         # /api/v0.1 branch
         routing.on 'v0.1' do
-          # /api/v0.1/:ownername/:repo_name branch
-          routing.on 'repo', String, String do |ownername, repo_name|
-            # GET /api/v0.1/repo/:ownername/:repo_name request
-            routing.is do
+          # /api/v0.1/:ownername/:reponame branch
+          routing.on 'repo', String, String do |ownername, reponame|
+            # GET /api/v0.1/repo/:ownername/:reponame request
+            routing.get do
               repo = Database::ORM[Entity::Repo]
-                     .find_full_name(ownername, repo_name)
+                     .find_full_name(ownername, reponame)
 
               routing.halt(404, error: 'Repository not found') unless repo
               repo.to_h
             end
 
-            # post '/api/v0.1/repo/:ownername/:repo_name
+            # POST '/api/v0.1/repo/:ownername/:reponame
             routing.post do
-              github_repo = Github::RepoMapper.new(app.config)
               begin
-                repo = github_repo.load(ownername, repo_name)
+                github_repo = Github::RepoMapper.new(app.config)
+                repo = github_repo.load(ownername, reponame)
               rescue StandardError
-                routing.halt(404, error: 'Repository not found')
+                routing.halt(404, error: "Repo not found")
               end
 
               stored_repo = Database::ORM[Entity::Repo].find_or_create(repo)

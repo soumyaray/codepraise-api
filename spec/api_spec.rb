@@ -17,21 +17,25 @@ describe 'Tests Praise library' do
   end
 
   describe 'Repo information' do
-    it 'HAPPY: should provide correct repo attributes' do
-      get "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
+    before do
+      # DatabaseCleaner.clean
+      Rake::Task['db:reset'].invoke
+    end
+
+    it 'HAPPY: should retrieve and store repo and collaborators' do
+      post "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
       _(last_response.status).must_equal 200
       repo_data = JSON.parse last_response.body
       _(repo_data.size).must_be :>, 0
     end
 
-    it 'SAD: should raise exception on incorrect repo' do
-      get "#{API_VER}/repo/#{USERNAME}/bad_repo"
-      _(last_response.status).must_equal 404
-      body = JSON.parse last_response.body
-      _(body.keys).must_include 'error'
-    end
-  end
+    it 'HAPPY: should find stored repo and collaborators' do
+      post "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
 
-  describe 'Collaborator information' do
+      get "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
+      _(last_response.status).must_equal 200
+      repo_data = JSON.parse last_response.body
+      _(repo_data.size).must_be :>, 0
+    end
   end
 end

@@ -55,6 +55,19 @@ namespace :db do
     Sequel::Migrator.run(app.DB, 'infrastructure/db/migrations')
   end
 
+  desc 'Drop all tables'
+  task :drop do
+    require_relative 'config/environment.rb'
+    # drop according to dependencies
+    app.DB.drop_table :repos_contributors
+    app.DB.drop_table :repos
+    app.DB.drop_table :collaborators
+    app.DB.drop_table :schema_info
+  end
+
+  desc 'Reset all database tables'
+  task reset: [:drop, :migrate]
+
   desc 'Delete dev or test database file'
   task :wipe do
     if app.environment == :production

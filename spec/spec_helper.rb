@@ -14,6 +14,10 @@ require 'webmock'
 
 require_relative 'test_load_all'
 
+load 'Rakefile'
+Rake::Task['db:reset'].invoke
+
+
 USERNAME = 'soumyaray'.freeze
 REPO_NAME = 'YPBT-app'.freeze
 CASSETTES_FOLDER = 'spec/fixtures/cassettes'.freeze
@@ -26,3 +30,7 @@ VCR.configure do |c|
   c.filter_sensitive_data('<GITHUB_TOKEN>') { github_token }
   c.filter_sensitive_data('<GITHUB_TOKEN_ESC>') { CGI.escape(github_token) }
 end
+
+# DB = app.DB
+# require 'database_cleaner'
+# DatabaseCleaner.strategy = :truncation
