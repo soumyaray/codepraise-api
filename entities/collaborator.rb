@@ -5,7 +5,9 @@ require 'dry-struct'
 module CodePraise
   module Entity
     # Domain entity object for git contributors
-    class Contributor < Dry::Struct
+    class Collaborator < Dry::Struct
+      attribute :id, Types::Int.optional
+      attribute :origin_id, Types::Strict::Int
       attribute :username, Types::Strict::String
       attribute :email, Types::Strict::String.optional
     end

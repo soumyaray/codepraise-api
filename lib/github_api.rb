@@ -42,7 +42,7 @@ module CodePraise
         call_gh_url(repo_req_url).parse
       end
 
-      def contributors_data(contributors_url)
+      def collaborators_data(contributors_url)
         call_gh_url(contributors_url).parse
       end
 

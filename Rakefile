@@ -41,3 +41,28 @@ namespace :quality do
     sh "flog #{CODE}"
   end
 end
+
+namespace :db do
+  require_relative 'config/environment.rb' # load config info
+  require 'sequel' # TODO: remove after create orm
+
+  Sequel.extension :migration
+  app = CodePraise::Api
+
+  desc 'Run migrations'
+  task :migrate do
+    puts "Migrating #{app.environment} database to latest"
+    Sequel::Migrator.run(app.DB, 'infrastructure/db/migrations')
+  end
+
+  desc 'Delete dev or test database file'
+  task :wipe do
+    if app.environment == :production
+      puts 'Cannot wipe production database!'
+      return
+    end
+
+    FileUtils.rm(app.config.db_filename)
+    puts "Deleted #{app.config.db_filename}"
+  end
+end

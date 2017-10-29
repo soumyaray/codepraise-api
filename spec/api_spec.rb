@@ -32,6 +32,6 @@ describe 'Tests Praise library' do
     end
   end
 
-  describe 'Contributor information' do
+  describe 'Collaborator information' do
   end
 end

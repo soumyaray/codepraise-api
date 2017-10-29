@@ -1,54 +1,69 @@
 # frozen_string_literal: false
 
-require_relative 'contributor_mapper.rb'
+require_relative 'collaborator_mapper.rb'
 
 module CodePraise
   module Github
     # Data Mapper object for Github's git repos
     class RepoMapper
-      def initialize(gateway)
-        @gateway = gateway
+      def initialize(config, gateway_class = Github::Api)
+        @config = config
+        @gateway_class = gateway_class
+        @gateway = @gateway_class.new(@config.gh_token)
       end
 
       def load(owner_name, repo_name)
-        repo_data = @gateway.repo_data(owner_name, repo_name)
-        build_entity(repo_data)
+        data = @gateway.repo_data(owner_name, repo_name)
+        build_entity(data)
       end
 
-      def build_entity(repo_data)
-        DataMapper.new(repo_data, @gateway).build_entity
+      def build_entity(data)
+        DataMapper.new(data, @config, @gateway_class).build_entity
       end
 
       # Extracts entity specific elements from data structure
       class DataMapper
-        def initialize(repo_data, gateway)
-          @repo_data = repo_data
-          @contributor_mapper = ContributorMapper.new(gateway)
+        def initialize(data, config, gateway_class)
+          @data = data
+          @contributor_mapper = CollaboratorMapper.new(
+            config, gateway_class
+          )
         end
 
         def build_entity
           CodePraise::Entity::Repo.new(
+            id: nil,
+            origin_id: origin_id,
+            name: name,
             size: size,
-            owner: owner,
             git_url: git_url,
+            owner: owner,
             contributors: contributors
           )
         end
 
+        def origin_id
+          @data['id']
+        end
+
+        def name
+          @data['name']
+        end
+
         def size
-          @repo_data['size']
+          @data['size']
         end
 
         def owner
-          ContributorMapper.build_entity(@repo_data['owner'])
+          CollaboratorMapper.build_entity(@data['owner'])
         end
 
         def git_url
-          @repo_data['git_url']
+          @data['git_url']
         end
 
         def contributors
-          @contributor_mapper.load_several(@repo_data['contributors_url'])
+          @contributor_mapper.load_several(@data['contributors_url'])
         end
       end
     end

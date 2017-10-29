@@ -48,7 +48,7 @@ describe 'Tests Praise library' do
     end
   end
 
-  describe 'Contributor information' do
+  describe 'Collaborator information' do
     before do
       api = CodePraise::Github::Api.new(GH_TOKEN)
       repo_mapper = CodePraise::Github::RepoMapper.new(api)
@@ -56,7 +56,7 @@ describe 'Tests Praise library' do
     end
 
     it 'HAPPY: should recognize owner' do
-      _(@repo.owner).must_be_kind_of CodePraise::Entity::Contributor
+      _(@repo.owner).must_be_kind_of CodePraise::Entity::Collaborator
     end
 
     it 'HAPPY: should identify owner' do
