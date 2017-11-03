@@ -14,8 +14,13 @@ module CodePraise
         rebuild_entity(db_repo)
       end
 
+      def self.find(entity)
+        find_origin_id(entity.origin_id)
+      end
+
       def self.find_id(id)
-        Database::RepoOrm.first(id: id)&.rebuild_entity
+        db_record = Database::RepoOrm.first(id: id)
+        rebuild_entity(db_record)
       end
 
       def self.find_origin_id(origin_id)
@@ -23,11 +28,9 @@ module CodePraise
         rebuild_entity(db_record)
       end
 
-      def self.find_or_create(entity)
-        find_origin_id(entity.origin_id) || create_from(entity)
-      end
+      def self.create(entity)
+        raise 'Repo already exists' if find(entity)
 
-      def self.create_from(entity)
         new_owner = Collaborators.find_or_create(entity.owner)
         db_owner = Database::CollaboratorOrm.first(id: new_owner.id)
 

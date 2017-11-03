@@ -5,7 +5,6 @@ require 'roda'
 module CodePraise
   # Web API
   class Api < Roda
-    plugin :json
     plugin :halt
 
     route do |routing|
@@ -23,11 +22,18 @@ module CodePraise
           routing.on 'repo', String, String do |ownername, reponame|
             # GET /api/v0.1/repo/:ownername/:reponame request
             routing.get do
-              repo = Repository::For[Entity::Repo]
-                     .find_full_name(ownername, reponame)
+              begin
+                repo = Repository::For[Entity::Repo]
+                      .find_full_name(ownername, reponame)
+              rescue StandardError
+                error = { error: 'Repository not found' }
+                routing.halt(500, error.to_json)
+              end
 
-              routing.halt(404, error: 'Repository not found') unless repo
-              repo.to_h
+              error = { error: 'Repository not found' }
+              routing.halt(404, error.to_json) unless repo
+
+              repo.to_h.to_json
             end
 
             # POST '/api/v0.1/repo/:ownername/:reponame
@@ -36,13 +42,25 @@ module CodePraise
                 repo = Github::RepoMapper.new(app.config)
                                          .load(ownername, reponame)
               rescue StandardError
-                routing.halt(404, error: "Repo not found")
+                error = { error: 'Repository not found' }
+                routing.halt(404, error.to_json)
               end
 
-              stored_repo = Repository::For[repo.class].find_or_create(repo)
+              if Repository::For[repo.class].find(repo)
+                error = { error: 'Repository not found' }
+                routing.halt(409, error.to_json)
+              end
+
+              begin
+                stored_repo = Repository::For[repo.class].create(repo)
+              rescue StandardError
+                error = { error: 'Repository not found' }
+                routing.halt(500, error.to_json)
+              end
+
               response.status = 201
               response['Location'] = "/api/v0.1/repo/#{ownername}/#{reponame}"
-              stored_repo.to_h
+              stored_repo.to_h.to_json
             end
           end
         end

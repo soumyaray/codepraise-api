@@ -18,11 +18,12 @@ describe 'Tests Praise library' do
 
   describe 'Repo information' do
     before do
-      # DatabaseCleaner.clean
-      Rake::Task['db:reset'].invoke
+      app.DB[:repos_contributors].delete
+      app.DB[:repos].delete
+      app.DB[:collaborators].delete
     end
 
-    describe "POSTting to create entities from Github" do
+    describe 'POSTting to create entities from Github' do
       it 'HAPPY: should retrieve and store repo and collaborators' do
         post "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
         _(last_response.status).must_equal 201
@@ -35,9 +36,16 @@ describe 'Tests Praise library' do
         post "#{API_VER}/repo/#{USERNAME}/sad_repo_name"
         _(last_response.status).must_equal 404
       end
+
+      it 'BAD: should report error if duplicate Github repo found' do
+        post "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
+        _(last_response.status).must_equal 201
+        post "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
+        _(last_response.status).must_equal 409
+      end
     end
 
-    describe "GETing database entities" do
+    describe 'GETing database entities' do
       before do
         post "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
       end

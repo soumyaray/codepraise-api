@@ -15,10 +15,10 @@ module CodePraise
       end
 
       def self.find_or_create(entity)
-        find_username(entity.username) || create_from(entity)
+        find_username(entity.username) || create(entity)
       end
 
-      def self.create_from(entity)
+      def self.create(entity)
         db_collaborator = Database::CollaboratorOrm.create(
           origin_id: entity.origin_id,
           username: entity.username,
