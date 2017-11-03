@@ -1,3 +1,5 @@
 config/secrets.yml
 coverage/
 *.db
+repostore/
+temp/
