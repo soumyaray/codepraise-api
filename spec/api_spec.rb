@@ -34,7 +34,7 @@ describe 'Tests Praise library' do
 
       it 'SAD: should report error if no Github repo found' do
         post "#{API_VER}/repo/#{USERNAME}/sad_repo_name"
-        _(last_response.status).must_equal 404
+        _(last_response.status).must_equal 400
       end
 
       it 'BAD: should report error if duplicate Github repo found' do
@@ -47,7 +47,11 @@ describe 'Tests Praise library' do
 
     describe 'GETing database entities' do
       before do
-        post "#{API_VER}/repo/#{USERNAME}/#{REPO_NAME}"
+        CodePraise::LoadFromGithub.new.call(
+          config: app.config,
+          ownername: USERNAME,
+          reponame: REPO_NAME
+        )
       end
 
       it 'HAPPY: should find stored repo and collaborators' do

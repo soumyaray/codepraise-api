@@ -12,7 +12,7 @@ module CodePraise
         @gateway = @gateway_class.new(@config.gh_token)
       end
 
-      def load(owner_name, repo_name)
+      def find(owner_name, repo_name)
         data = @gateway.repo_data(owner_name, repo_name)
         build_entity(data)
       end

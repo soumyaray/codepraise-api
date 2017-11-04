@@ -28,6 +28,10 @@ module CodePraise
         rebuild_entity(db_record)
       end
 
+      def self.all
+        Database::RepoOrm.all.map { |db_repo| rebuild_entity(db_repo) }
+      end
+
       def self.create(entity)
         raise 'Repo already exists' if find(entity)
 
