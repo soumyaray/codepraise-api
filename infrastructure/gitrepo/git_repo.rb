@@ -4,6 +4,10 @@ require 'fileutils'
 require 'base64'
 
 module Git
+  # USAGE:
+  #   load 'infrastructure/gitrepo/gitrepo.rb'
+  #   origin = Git::RemoteRepo.new('git@github.com:soumyaray/YPBT-app.git')
+  #   local = Git::LocalRepo.new(origin, 'infrastructure/gitrepo/repostore')
   module Errors
     # Local repo not setup or invalid
     InvalidLocalRepo = Class.new(StandardError)
@@ -30,13 +34,14 @@ module Git
   class LocalRepo
     ONLY_FOLDERS = '**/'
     FILES_AND_FOLDERS = '**/*'
+    CODE_FILENAME_MATCH = /\.(rb|js|html|css|yml|json|txt)$/
 
     def initialize(remote, repostore_path)
       @remote = remote
       @repo_path = [repostore_path, @remote.unique_id].join('/')
     end
 
-    def clone_remote
+    def clone_remote(remote)
       @remote.local_clone(@repo_path)
       self
     end
@@ -63,13 +68,15 @@ module Git
       return @files if @files
 
       @files = in_repo do
-        Dir.glob(FILES_AND_FOLDERS)
-           .select { |disk_entity| File.file? disk_entity }
+        Dir.glob(FILES_AND_FOLDERS).select do |path|
+          File.file?(path) && (path =~ CODE_FILENAME_MATCH)
+        end
       end
     end
 
     def in_repo(&block)
-      Dir.chdir @repo_path { yield block }
+      raise_unless_setup
+      Dir.chdir(@repo_path) { yield block }
     end
 
     def exists?
@@ -77,10 +84,6 @@ module Git
     end
 
     private
-
-    def blame_file(filename)
-      BlameFile.new(filename)
-    end
 
     def raise_unless_setup
       raise Errors::InvalidLocalRepo unless exists?
@@ -91,7 +94,3 @@ module Git
     end
   end
 end
-
-# load 'infrastructure/gitrepo/gitrepo.rb'
-# origin = Git::RemoteRepo.new('git@github.com:soumyaray/YPBT-app.git')
-# local = Git::LocalRepo.new(origin, 'infrastructure/gitrepo/repostore')

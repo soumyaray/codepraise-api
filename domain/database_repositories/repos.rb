@@ -15,7 +15,8 @@ module CodePraise
       end
 
       def self.find_id(id)
-        Database::RepoOrm.first(id: id)&.rebuild_entity
+        db_record = Database::RepoOrm.first(id: id)
+        rebuild_entity(db_record)
       end
 
       def self.find_origin_id(origin_id)

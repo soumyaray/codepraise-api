@@ -1,6 +1,8 @@
 ---
 development:
   db_filename: infrastructure/database/dev.db
+  repostore_path: infrastructure/gitrepo/repostore
 
 test:
   db_filename: infrastructure/database/test.db
+  repostore_path: infrastructure/gitrepo/repostore
