@@ -22,7 +22,7 @@ module CodePraise
           routing.on 'repo', String, String do |ownername, reponame|
             # GET /api/v0.1/repo/:ownername/:reponame request
             routing.get do
-              find_result = FindDatabaseRepo.new.call(
+              find_result = FindDatabaseRepo.call(
                 ownername: ownername, reponame: reponame
               )
 

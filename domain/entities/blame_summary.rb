@@ -10,8 +10,9 @@ module CodePraise
     #   report = CodePraise::BlameReport.new(app.config, url)
     #   all_report = report.file_summaries
     class BlameSummary
-      attr_accessor :local
       DEFAULT_EXCLUDE_FOLDERS = %w[fixtures]
+
+      attr_reader :local
 
       def initialize(local_repo)
         @local = local_repo

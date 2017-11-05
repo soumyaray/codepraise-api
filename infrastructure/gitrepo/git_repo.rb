@@ -36,6 +36,8 @@ module Git
     FILES_AND_FOLDERS = '**/*'
     CODE_FILENAME_MATCH = /\.(rb|js|html|css|yml|json|txt)$/
 
+    attr_reader :repo_path
+
     def initialize(remote, repostore_path)
       @remote = remote
       @repo_path = [repostore_path, @remote.unique_id].join('/')

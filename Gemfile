@@ -19,10 +19,11 @@ gem 'dry-struct'
 gem 'dry-types'
 
 # Representers
-gem 'multi_json'
 gem 'roar'
+gem 'multi_json'
 
-# Transactions
+# Services
+gem 'dry-monads'
 gem 'dry-transaction'
 
 group :test do

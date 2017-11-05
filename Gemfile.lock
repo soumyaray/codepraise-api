@@ -165,6 +165,7 @@ PLATFORMS
 
 DEPENDENCIES
   database_cleaner
+  dry-monads
   dry-struct
   dry-transaction
   dry-types

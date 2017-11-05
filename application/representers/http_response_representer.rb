@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 module CodePraise
+  # Representer for HTTP response information
+  # Usage:
+  #   result = Result.new(:not_found, 'resource not found')
+  #   HttpResponseRepresenter.new(result).to_json
+  #   HttpResponseRepresenter.new(result).http_code
   class HttpResponseRepresenter < Roar::Decorator
     include Roar::JSON
 
@@ -8,7 +13,7 @@ module CodePraise
     property :message
 
     HTTP_CODE = {
-      success: 200,
+      ok: 200,
       created: 201,
       processing: 202,
 
@@ -35,7 +40,7 @@ module CodePraise
     end
 
     def http_message
-      { msg_or_error => [@represented.message] }.to_json
+      { msg_or_error => [@represented.message] }
     end
 
     def msg_or_error
