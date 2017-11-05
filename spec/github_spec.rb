@@ -1,14 +1,8 @@
 # frozen_string_literal: false
 
 require_relative 'spec_helper.rb'
-require 'econfig'
 
-describe 'Tests Praise library' do
-  extend Econfig::Shortcut
-  Econfig.env = 'development'
-  Econfig.root = '.'
-
-  # GH_TOKEN = config.gh_token
+describe 'Test Github Mapper and Gateway' do
   CORRECT = YAML.safe_load(File.read('spec/fixtures/gh_results.yml'))
   CASSETTE_FILE = 'github_api'.freeze
 
