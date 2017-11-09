@@ -25,10 +25,6 @@ module CodePraise
       internal_error: 500
     }.freeze
 
-    def to_json
-      http_message.to_json
-    end
-
     def http_code
       HTTP_CODE[@represented.code]
     end
@@ -40,7 +36,7 @@ module CodePraise
     end
 
     def http_message
-      { msg_or_error => [@represented.message] }
+      { msg_or_error => @represented.message }
     end
 
     def msg_or_error

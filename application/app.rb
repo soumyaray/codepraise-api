@@ -12,7 +12,8 @@ module CodePraise
 
       # GET / request
       routing.root do
-        { 'message' => "CodePraise API v0.1 up in #{app.environment} mode" }
+        message = "CodePraise API v0.1 up in #{app.environment} mode"
+        HttpResponseRepresenter.new(Result.new(:ok, message)).to_json
       end
 
       routing.on 'api' do
