@@ -41,9 +41,10 @@ module Git
     def initialize(remote, repostore_path)
       @remote = remote
       @repo_path = [repostore_path, @remote.unique_id].join('/')
+      clone_remote unless exists?
     end
 
-    def clone_remote(remote)
+    def clone_remote
       @remote.local_clone(@repo_path)
       self
     end
