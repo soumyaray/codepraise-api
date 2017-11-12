@@ -29,13 +29,13 @@ task :rmvcr do
 end
 
 namespace :quality do
-  CODE = 'lib/'
+  CODE = '**/*.rb'
 
   desc 'run all quality checks'
   task all: %i[rubocop reek flog]
 
   task :rubocop do
-    sh 'rubocop'
+    sh "rubocop #{CODE}"
   end
 
   task :reek do

@@ -4,6 +4,10 @@ module CodePraise
   module Repository
     # Repository for Repo Entities
     class Repos
+      def self.all
+        Database::RepoOrm.all.map { |db_repo| rebuild_entity(db_repo) }
+      end
+
       def self.find_full_name(ownername, reponame)
         # SELECT * FROM `repos` LEFT JOIN `collaborators`
         # ON (`collaborators`.`id` = `repos`.`owner_id`)
