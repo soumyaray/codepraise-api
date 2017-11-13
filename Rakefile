@@ -80,7 +80,7 @@ namespace :db do
       return
     end
 
-    FileUtils.rm(app.config.db_filename)
-    puts "Deleted #{app.config.db_filename}"
+    FileUtils.rm(app.config.DB_FILENAME)
+    puts "Deleted #{app.config.DB_FILENAME}"
   end
 end

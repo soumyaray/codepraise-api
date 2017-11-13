@@ -8,7 +8,7 @@ module CodePraise
       def initialize(config, gateway_class = Github::Api)
         @config = config
         @gateway_class = gateway_class
-        @gateway = @gateway_class.new(@config.gh_token)
+        @gateway = @gateway_class.new(@config.GH_TOKEN)
       end
 
       def load_several(url)

@@ -34,7 +34,7 @@ module CodePraise
       end
 
       def initialize(token)
-        @gh_token = token
+        @GH_TOKEN = token
       end
 
       def repo_data(username, repo_name)
@@ -54,7 +54,7 @@ module CodePraise
 
       def call_gh_url(url)
         response = HTTP.headers('Accept' => 'application/vnd.github.v3+json',
-                                'Authorization' => "token #{@gh_token}")
+                                'Authorization' => "token #{@GH_TOKEN}")
                        .get(url)
         Response.new(response).response_or_error
       end

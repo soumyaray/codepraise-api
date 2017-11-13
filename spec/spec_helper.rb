@@ -26,7 +26,7 @@ VCR.configure do |c|
   c.cassette_library_dir = CASSETTES_FOLDER
   c.hook_into :webmock
 
-  github_token = app.config.gh_token
+  github_token = app.config.GH_TOKEN
   c.filter_sensitive_data('<GITHUB_TOKEN>') { github_token }
   c.filter_sensitive_data('<GITHUB_TOKEN_ESC>') { CGI.escape(github_token) }
 end

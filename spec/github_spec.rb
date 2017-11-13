@@ -34,7 +34,7 @@ describe 'Test Github Mapper and Gateway' do
     it 'SAD: should raise exception when unauthorized' do
       proc do
         require 'ostruct'
-        sad_config = OpenStruct.new(gh_token: 'sad_token')
+        sad_config = OpenStruct.new(GH_TOKEN: 'sad_token')
         repo_mapper = CodePraise::Github::RepoMapper.new(sad_config)
         repo_mapper.find(USERNAME, REPO_NAME)
       end.must_raise CodePraise::Github::Api::Errors::Unauthorized

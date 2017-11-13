@@ -15,7 +15,7 @@ module CodePraise
 
       def initialize(repo, config = CodePraise::Api.config)
         origin = Git::RemoteRepo.new(repo.git_url)
-        @local = Git::LocalRepo.new(origin, config.repostore_path)
+        @local = Git::LocalRepo.new(origin, config.REPOSTORE_PATH)
         @blame_reports = Blame::Report.new(@local)
       end
 
