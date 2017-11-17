@@ -9,8 +9,9 @@ module CodePraise
                   key: :owner_id
 
       many_to_many :contributed_repos,
+                   class: :'CodePraise::Database::RepoOrm',
                    join_table: :repos_contributors,
-                   left_key: :contributor_id, right_key: :repo_id
+                   left_key: :collaborator_id, right_key: :repo_id
 
       plugin :timestamps, update_on_create: true
     end
