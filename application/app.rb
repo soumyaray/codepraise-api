@@ -5,6 +5,8 @@ require 'roda'
 module CodePraise
   # Web API
   class Api < Roda
+    plugin :all_verbs
+
     route do |routing|
       app = Api
       response['Content-Type'] = 'application/json'
@@ -24,6 +26,22 @@ module CodePraise
               routing.get do
                 repos = Repository::For[Entity::Repo].all
                 ReposRepresenter.new(Repos.new(repos)).to_json
+              end
+
+              routing.delete do
+                case app.environment
+                when :development, :test
+                  %i[repos_contributors repos collaborators].each do |table|
+                    app.DB[table].delete
+                  end
+                  result = Result.new(:ok, 'deleted')
+                when :production
+                  result = Result.new(:forbidden, 'not allowed')
+                end
+
+                http_response = HttpResponseRepresenter.new(result)
+                response.status = http_response.http_code
+                http_response.to_json
               end
             end
 

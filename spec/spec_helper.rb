@@ -17,7 +17,6 @@ require_relative 'test_load_all'
 load 'Rakefile'
 Rake::Task['db:reset'].invoke
 
-
 USERNAME = 'soumyaray'.freeze
 REPO_NAME = 'YPBT-app'.freeze
 CASSETTES_FOLDER = 'spec/fixtures/cassettes'.freeze

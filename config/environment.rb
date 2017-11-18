@@ -12,7 +12,7 @@ module CodePraise
     Econfig.env = environment.to_s
     Econfig.root = '.'
 
-        configure :development do
+    configure :development do
       # Allows running reload! in pry to restart entire app
       def self.reload!
         exec 'pry -r ./spec/test_load_all'
@@ -24,7 +24,7 @@ module CodePraise
     end
 
     configure :production do
-      # Use Heroku's DATABASE_URL environment variable
+      # Don't specify: Heroku has DATABASE_URL environment variable
     end
 
     configure do
