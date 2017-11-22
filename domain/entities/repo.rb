@@ -16,12 +16,17 @@ module CodePraise
 
       MAX_SIZE = 1000 # for cloning, analysis, summaries, etc.
 
-      def summarizable?
-        size < MAX_SIZE
+      module Errors
+        TooLargeToSummarize = Class.new(StandardError)
+      end
+
+      def too_large?
+        size > MAX_SIZE
       end
 
       def folder_summary(folder_name)
-        Blame::Summary.new(self).for_folder(folder_name) if summarizable?
+        raise TooLargeToSummarize if too_large?
+        Entity::FolderSummary.new(self, folder_name)
       end
     end
   end
