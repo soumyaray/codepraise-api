@@ -76,18 +76,33 @@ describe 'Tests Praise library' do
         )
       end
 
-      it '(BAD) should report error for repos that are not loaded' do
+      it '(HAPPY) should get blame summary for root of loaded repo' do
+        get "#{API_VER}/summary/#{USERNAME}/#{REPO_NAME}"
+        summary = JSON.parse last_response.body
+        _(last_response.status).must_equal 200
+        _(summary['folder_name']).must_equal ''
+        _(summary['base_files'].keys.count).must_equal 1
+        _(summary['subfolders'].keys.count).must_equal 10
+      end
+
+      it '(HAPPY) should get blame summary for any folder of loaded repo' do
+        get "#{API_VER}/summary/#{USERNAME}/#{REPO_NAME}/forms"
+        _(last_response.status).must_equal 200
+        summary = JSON.parse last_response.body
+        _(summary.keys).must_equal %w(folder_name subfolders base_files)
+        _(summary['folder_name']).must_equal 'forms'
+        _(summary['base_files'].keys).must_equal %w(url_request.rb init.rb)
+        _(summary['subfolders'].keys).must_equal %W(#{''} errors)
+      end
+
+      it '(SAD) should report error for repos not loaded' do
         get "#{API_VER}/summary/#{USERNAME}/bad_repo"
-        skip
         _(last_response.status).must_equal 404
       end
 
-      it '(HAPPY) should get blame summary for root of a loaded repo' do
-        skip
-      end
-
-      it '(HAPPY) should get blame summary for any folder of a loaded repo' do
-        get "#{API_VER}/summary/#{USERNAME}/#{REPO_NAME}/forms"
+      it '(SAD) should report error for subfolders if repos not loaded' do
+        get "#{API_VER}/summary/#{USERNAME}/bad_repo/bad_folder"
+        _(last_response.status).must_equal 404
       end
     end
   end

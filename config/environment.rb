@@ -12,7 +12,7 @@ module CodePraise
     Econfig.env = environment.to_s
     Econfig.root = '.'
 
-    configure :development do
+    configure :development, :test do
       # Allows running reload! in pry to restart entire app
       def self.reload!
         exec 'pry -r ./spec/test_load_all'
