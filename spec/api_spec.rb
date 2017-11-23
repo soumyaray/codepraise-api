@@ -66,5 +66,29 @@ describe 'Tests Praise library' do
         _(last_response.status).must_equal 404
       end
     end
+
+    describe 'GETting blame summary pages' do
+      before do
+        CodePraise::LoadFromGithub.new.call(
+          config: app.config,
+          ownername: USERNAME,
+          reponame: REPO_NAME
+        )
+      end
+
+      it '(BAD) should report error for repos that are not loaded' do
+        get "#{API_VER}/summary/#{USERNAME}/bad_repo"
+        skip
+        _(last_response.status).must_equal 404
+      end
+
+      it '(HAPPY) should get blame summary for root of a loaded repo' do
+        skip
+      end
+
+      it '(HAPPY) should get blame summary for any folder of a loaded repo' do
+        get "#{API_VER}/summary/#{USERNAME}/#{REPO_NAME}/forms"
+      end
+    end
   end
 end
