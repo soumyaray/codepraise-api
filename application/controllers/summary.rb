@@ -17,10 +17,10 @@ module CodePraise
         routing.get do
           path = request.remaining_path
           folder = path.empty? ? '' : path[1..-1]
-          summary = @repo.folder_summary(folder)
+          folder_summary = Blame::Summary.new(@repo).for_folder(folder)
 
           response.status = 200
-          FolderSummaryRepresenter.new(summary).to_json
+          FolderSummaryRepresenter.new(folder_summary).to_json
         end
       end
     end

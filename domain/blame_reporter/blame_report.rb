@@ -4,8 +4,8 @@ module CodePraise
   module Blame
     # Git blame parsing and reporting services
     class Reporter
-      def initialize(git_url, config = CodePraise::Api.config)
-        origin = Git::RemoteRepo.new(git_url)
+      def initialize(repo, config = CodePraise::Api.config)
+        origin = Git::RemoteRepo.new(repo.git_url)
         @local = Git::LocalRepo.new(origin, config.REPOSTORE_PATH)
       end
 

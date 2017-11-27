@@ -8,11 +8,9 @@ module CodePraise
     class FolderSummary
       attr_reader :folder_name
 
-      def initialize(repo, folder_name)
+      def initialize(repo, folder_name, blame_reports)
         @folder_name = folder_name
-        @blame_reports = Blame::Reporter
-                         .new(repo.git_url)
-                         .folder_report(@folder_name)
+        @blame_reports = blame_reports
       end
 
       def subfolders

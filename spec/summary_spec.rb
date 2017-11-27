@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'spec_helper.rb'
 
 describe 'Test Git Commands Mapper and Gateway' do
@@ -26,7 +28,7 @@ describe 'Test Git Commands Mapper and Gateway' do
   end
 
   it 'HAPPY: should get blame summary for entire repo' do
-    summary = @repo.folder_summary('')
+    summary = CodePraise::Blame::Summary.new(@repo).for_folder('')
     _(summary.subfolders.count).must_equal 10
     _(summary.base_files.count).must_equal 1
     _(summary.base_files.keys.first).must_equal 'init.rb'
@@ -34,9 +36,7 @@ describe 'Test Git Commands Mapper and Gateway' do
   end
 
   it 'HAPPY: should get accurate blame summary for specific folder' do
-    summary = @repo.folder_summary('forms');
-    folder_summary = summary.subfolders
-    files_summary = summary.base_files
+    summary = CodePraise::Blame::Summary.new(@repo).for_folder('forms')
 
     _(summary.subfolders.count).must_equal 2
     _(summary.subfolders['errors']['<b37582000@gmail.com>']).must_equal({name: "luyimin", count: 2})
