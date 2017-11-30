@@ -26,8 +26,8 @@ namespace :run do
     sh 'rerun -c "rackup -p 3030"'
   end
 
-  task :app_test do
-    sh 'RACK_ENV=test rackup -p 3000'
+  task :test do
+    sh 'rerun "RACK_ENV=test rackup -p 3000"'
   end
 end
 

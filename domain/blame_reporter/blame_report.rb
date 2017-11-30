@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'concurrent'
+
 module CodePraise
   module Blame
     # Git blame parsing and reporting services
@@ -14,8 +16,8 @@ module CodePraise
         files = @local.files.select { |file| file.start_with? folder_name }
         @local.in_repo do
           files.map do |filename|
-            [filename, file_report(filename)]
-          end
+            Concurrent::Promise.execute { [filename, file_report(filename)] }
+          end.map(&:value)
         end.to_h
       end
 
