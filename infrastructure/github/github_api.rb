@@ -46,6 +46,10 @@ module CodePraise
         call_gh_url(contributors_url).parse
       end
 
+      def http_repo_url(username, repo_name)
+        "https://github.com/#{username}/#{repo_name}.git"
+      end
+
       def self.repo_path(path)
         'https://api.github.com/repos/' + path
       end

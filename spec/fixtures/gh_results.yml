@@ -18,7 +18,7 @@ owner:
   received_events_url: https://api.github.com/users/soumyaray/received_events
   type: User
   site_admin: false
-git_url: git://github.com/soumyaray/YPBT-app.git
+git_url: https://github.com/soumyaray/YPBT-app.git
 contributors_url: https://api.github.com/repos/soumyaray/YPBT-app/contributors
 contributors:
 - login: Yuan-Yu

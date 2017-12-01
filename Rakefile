@@ -6,6 +6,12 @@ task :default do
   puts `rake -T`
 end
 
+# Configuration only -- not for direct calls
+task :config do
+  require_relative 'config/environment.rb' # load config info
+  @app = CodePraise::Api
+end
+
 desc 'run tests'
 Rake::TestTask.new(:spec) do |t|
   t.pattern = 'spec/*_spec.rb'
@@ -13,28 +19,45 @@ Rake::TestTask.new(:spec) do |t|
 end
 
 desc 'rerun tests'
-task :respec do
-  sh "rerun -c 'rake spec' --ignore 'coverage/*'"
+task :respec => :config do
+  sh "rerun -c 'rake spec' --ignore 'coverage/*' --ignore '#{@app.config.REPOSTORE_PATH}'"
 end
 
+desc 'run application console (pry)'
 task :console do
   sh 'pry -r ./spec/test_load_all'
 end
 
 namespace :run do
-  task :dev do
-    sh 'rerun -c "rackup -p 3030"'
+  task :dev => :config do
+    sh "rerun -c 'RACK_ENV=test rackup -p 3030' --ignore 'coverage/*' --ignore '#{@app.config.REPOSTORE_PATH}'"
   end
 
-  task :test do
-    sh 'rerun "RACK_ENV=test rackup -p 3000"'
+  task :test => :config do
+    sh "rerun -c 'RACK_ENV=test rackup -p 3000' --ignore 'coverage/*' --ignore '#{@app.config.REPOSTORE_PATH}'"
   end
 end
 
-desc 'delete cassette fixtures'
-task :rmvcr do
-  sh 'rm spec/fixtures/cassettes/*.yml' do |ok, _|
-    puts(ok ? 'Cassettes deleted' : 'No cassettes found')
+namespace :ls do
+  desc 'list cloned repos in repo store'
+  task :repostore => :config do
+    `ls #{@app.config.REPOSTORE_PATH}`
+  end
+end
+
+namespace :rm do
+  desc 'delete cassette fixtures'
+  task :vcr do
+    sh 'rm spec/fixtures/cassettes/*.yml' do |ok, _|
+      puts(ok ? 'Cassettes deleted' : 'No cassettes found')
+    end
+  end
+
+  desc 'delete cloned repos in repo store'
+  task :repostore => :config do
+    sh "rm -rf #{@app.config.REPOSTORE_PATH}/*" do |ok, _|
+      puts(ok ? 'Cloned repos deleted' : "Could not delete cloned repos")
+    end
   end
 end
 

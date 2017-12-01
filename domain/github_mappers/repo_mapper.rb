@@ -59,7 +59,7 @@ module CodePraise
         end
 
         def git_url
-          @data['git_url']
+          @data['clone_url']
         end
 
         def contributors
