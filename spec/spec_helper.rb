@@ -24,6 +24,7 @@ CASSETTES_FOLDER = 'spec/fixtures/cassettes'.freeze
 VCR.configure do |c|
   c.cassette_library_dir = CASSETTES_FOLDER
   c.hook_into :webmock
+  c.ignore_hosts 'sqs.us-east-1.amazonaws.com'
 
   github_token = app.config.GH_TOKEN
   c.filter_sensitive_data('<GITHUB_TOKEN>') { github_token }

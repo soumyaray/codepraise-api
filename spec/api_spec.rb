@@ -16,7 +16,33 @@ describe 'Tests Praise library' do
     VCR.eject_cassette
   end
 
-  describe 'Repo information' do
+  describe 'Cloning repos' do
+    before do
+      CodePraise::Repository::RepoStore.delete_all!
+      CodePraise::LoadFromGithub.new.call(
+        config: app.config,
+        ownername: USERNAME,
+        reponame: REPO_NAME
+      )
+    end
+
+    after do
+      CodePraise::Repository::Repos.clone_all!
+    end
+
+    it 'HAPPY: it should begin processing uncloned repo' do
+      get "#{API_VER}/summary/#{USERNAME}/#{REPO_NAME}"
+      _(last_response.status).must_equal 202
+
+      STDOUT.sync
+      5.times { sleep(1); print '.' }
+
+      get "#{API_VER}/summary/#{USERNAME}/#{REPO_NAME}"
+      _(last_response.status).must_equal 200
+    end
+  end
+
+  describe 'Cloned repo information' do
     before do
       app.DB[:repos_contributors].delete
       app.DB[:repos].delete

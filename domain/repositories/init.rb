@@ -2,4 +2,5 @@
 
 require_relative 'repos.rb'
 require_relative 'collaborators.rb'
+require_relative 'repo_store.rb'
 require_relative 'for.rb'

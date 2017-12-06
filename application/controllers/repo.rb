@@ -34,30 +34,19 @@ module CodePraise
             ownername: ownername, reponame: reponame
           )
 
-          http_response = HttpResponseRepresenter.new(find_result.value)
-          response.status = http_response.http_code
-          if find_result.success?
-            RepoRepresenter.new(find_result.value.message).to_json
-          else
-            http_response.to_json
-          end
+          represent_response(find_result, RepoRepresenter)
         end
 
         # POST #{API_ROOT}/repo/:ownername/:reponame request
         routing.post do
-          service_result = LoadFromGithub.new.call(
+          load_result = LoadFromGithub.new.call(
             config: Api.config,
             ownername: ownername,
             reponame: reponame
           )
 
-          http_response = HttpResponseRepresenter.new(service_result.value)
-          response.status = http_response.http_code
-          if service_result.success?
+          represent_response(load_result, RepoRepresenter) do
             response['Location'] = "#{@api_root}/repo/#{ownername}/#{reponame}"
-            RepoRepresenter.new(service_result.value.message).to_json
-          else
-            http_response.to_json
           end
         end
       end

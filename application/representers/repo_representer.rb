@@ -8,9 +8,10 @@ module CodePraise
     include Roar::JSON
 
     property :origin_id
-    property :owner, extend: CollaboratorRepresenter
+    property :owner, extend: CollaboratorRepresenter, class: OpenStruct
     property :name
     property :git_url
-    collection :contributors, extend: CollaboratorRepresenter
+    property :size
+    collection :contributors, extend: CollaboratorRepresenter, class: OpenStruct
   end
 end

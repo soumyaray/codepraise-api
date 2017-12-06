@@ -20,7 +20,9 @@ describe 'Test Git Commands Mapper and Gateway' do
       reponame: REPO_NAME
     )
 
-    @repo = CodePraise::Repository::Repos.find_full_name(USERNAME, REPO_NAME)
+    repo = CodePraise::Repository::Repos.find_full_name(USERNAME, REPO_NAME)
+    @gitrepo = CodePraise::GitRepo.new(repo)
+    @gitrepo.clone! unless @gitrepo.exists_locally?
   end
 
   after do
@@ -28,7 +30,7 @@ describe 'Test Git Commands Mapper and Gateway' do
   end
 
   it 'HAPPY: should get blame summary for entire repo' do
-    summary = CodePraise::Blame::Summary.new(@repo).for_folder('')
+    summary = CodePraise::Blame::Summary.new(@gitrepo).for_folder('')
     _(summary.subfolders.count).must_equal 10
     _(summary.base_files.count).must_equal 1
     _(summary.base_files.keys.first).must_equal 'init.rb'
@@ -36,7 +38,7 @@ describe 'Test Git Commands Mapper and Gateway' do
   end
 
   it 'HAPPY: should get accurate blame summary for specific folder' do
-    summary = CodePraise::Blame::Summary.new(@repo).for_folder('forms')
+    summary = CodePraise::Blame::Summary.new(@gitrepo).for_folder('forms')
 
     _(summary.subfolders.count).must_equal 2
     _(summary.subfolders['errors']['<b37582000@gmail.com>']).must_equal({name: "luyimin", count: 2})

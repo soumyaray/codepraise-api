@@ -36,6 +36,13 @@ module CodePraise
         Database::RepoOrm.all.map { |db_repo| rebuild_entity(db_repo) }
       end
 
+      def self.clone_all!
+        Database::RepoOrm.all.each do |repo|
+          gitrepo = GitRepo.new(repo)
+          gitrepo.clone! unless gitrepo.exists_locally?
+        end
+      end
+
       def self.create(entity)
         raise 'Repo already exists' if find(entity)
 
