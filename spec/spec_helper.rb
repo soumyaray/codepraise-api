@@ -31,6 +31,9 @@ VCR.configure do |c|
   c.filter_sensitive_data('<GITHUB_TOKEN_ESC>') { CGI.escape(github_token) }
 end
 
+# To flush dots and output during testing
+STDOUT.sync
+
 # DB = app.DB
 # require 'database_cleaner'
 # DatabaseCleaner.strategy = :truncation

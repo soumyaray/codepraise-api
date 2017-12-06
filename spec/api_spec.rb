@@ -18,12 +18,13 @@ describe 'Tests Praise library' do
 
   describe 'Cloning repos' do
     before do
-      CodePraise::Repository::RepoStore.delete_all!
       CodePraise::LoadFromGithub.new.call(
         config: app.config,
         ownername: USERNAME,
         reponame: REPO_NAME
       )
+
+      CodePraise::Repository::RepoStore.delete_all!
     end
 
     after do
@@ -34,7 +35,6 @@ describe 'Tests Praise library' do
       get "#{API_VER}/summary/#{USERNAME}/#{REPO_NAME}"
       _(last_response.status).must_equal 202
 
-      STDOUT.sync
       5.times { sleep(1); print '.' }
 
       get "#{API_VER}/summary/#{USERNAME}/#{REPO_NAME}"
@@ -100,6 +100,8 @@ describe 'Tests Praise library' do
           ownername: USERNAME,
           reponame: REPO_NAME
         )
+
+        CodePraise::Repository::Repos.clone_all!
       end
 
       it '(HAPPY) should get blame summary for root of loaded repo' do

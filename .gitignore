@@ -2,5 +2,4 @@ config/secrets.yml
 coverage/
 .bundle/
 *.db
-repostore/
-temp/
+_*
