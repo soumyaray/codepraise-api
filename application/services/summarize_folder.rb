@@ -7,19 +7,25 @@ module CodePraise
   class SummarizeFolder
     include Dry::Transaction
 
-    step :clone_or_find_repo
+    step :find_repo
+    step :clone_repo
     step :summarize_folder
 
-    def clone_or_find_repo(input)
+    def find_repo(input)
       input[:gitrepo] = GitRepo.new(input[:repo])
+      Right(input)
+    end
+
+    def clone_repo(input)
       if input[:gitrepo].exists_locally?
         Right(input)
       else
-        repo_json = RepoRepresenter.new(input[:repo]).to_json
-        CloneRepoWorker.perform_async(repo_json)
-        Left(Result.new(:processing, 'Processing the summary request'))
+        clone_request = clone_request_json(input)
+        CloneRepoWorker.perform_async(clone_request.to_json)
+        Left(Result.new(:processing, { id: input[:id] }))
       end
-    rescue
+    rescue StandardError => error
+      puts "ERROR: SummarizeFolder#clone_repo - #{error.inspect}"
       Left(Result.new(:internal_error, 'Could not clone repo'))
     end
 
@@ -28,8 +34,15 @@ module CodePraise
                        .new(input[:gitrepo])
                        .for_folder(input[:folder])
       Right(Result.new(:ok, folder_summary))
-    rescue
+    rescue StandardError
       Left(Result.new(:internal_error, 'Could not summarize folder'))
+    end
+
+    private
+
+    def clone_request_json(input)
+      clone_request = CloneRequest.new(input[:repo], input[:id])
+      CloneRequestRepresenter.new(clone_request)
     end
   end
 end

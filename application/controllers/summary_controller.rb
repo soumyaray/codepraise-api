@@ -14,21 +14,20 @@ module CodePraise
         routing.halt(404, 'Repo not found') if find_result.failure?
         @repo = find_result.value.message
 
-        routing.get do
-          path = request.remaining_path
-          folder = path.empty? ? '' : path[1..-1]
+      routing.get do
+        path = request.remaining_path
+        folder = path.empty? ? '' : path[1..-1]
 
-          request_unique = [request.env, request.path, Time.now]
-          request_id = (request_unique.map(&:to_s).join).hash
+        request_id = [request.env, request.path, Time.now.to_f].hash
 
-          summarize_result = SummarizeFolder.new.call(
-            repo: @repo,
-            folder: folder,
-            unique_id: request_id
-          )
+        summarize_result = SummarizeFolder.new.call(
+          repo: @repo,
+          folder: folder,
+          id: request_id
+        )
 
-          represent_response(summarize_result, FolderSummaryRepresenter)
-        end
+        represent_response(summarize_result, FolderSummaryRepresenter)
+      end
       end
     end
   end

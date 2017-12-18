@@ -23,7 +23,7 @@ module Git
     end
 
     def clone_remote
-      @remote.local_clone(@repo_path)
+      @remote.local_clone(@repo_path) { |line| yield line if block_given? }
       self
     end
 

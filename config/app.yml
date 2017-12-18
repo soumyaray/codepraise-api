@@ -1,8 +1,19 @@
 ---
 development:
+  API_URL: 'http://localhost:3030'
   DB_FILENAME: infrastructure/database/dev.db
   REPOSTORE_PATH: infrastructure/gitrepo/repostore
 
 test:
+  API_URL: 'http://localhost:3000'
   DB_FILENAME: infrastructure/database/test.db
+  REPOSTORE_PATH: infrastructure/gitrepo/repostore
+
+app_test:
+  API_URL: 'http://localhost:3000'
+  DB_FILENAME: infrastructure/database/test.db
+  REPOSTORE_PATH: infrastructure/gitrepo/repostore
+
+production:
+  API_URL: 'https://codepraise-api.herokuapp.com'
   REPOSTORE_PATH: infrastructure/gitrepo/repostore

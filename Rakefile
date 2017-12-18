@@ -35,14 +35,20 @@ namespace :api do
   namespace :run do
     desc 'Rerun the API server in development mode'
     task :development => :config do
-      puts 'REMEMBER: need to run `rake run:dev:worker` in another process'
+      puts 'REMEMBER: need to run `rake worker:run:development` in another process'
       sh "rerun -c 'rackup -p 3030' --ignore '#{@config.REPOSTORE_PATH}/*'"
     end
 
     desc 'Rerun the API server in test mode'
     task :test => :config do
-      puts 'REMEMBER: need to run `rake run:test:worker` in another process'
+      puts 'REMEMBER: need to run `rake worker:run:test` in another process'
       sh "rerun -c 'RACK_ENV=test rackup -p 3000' --ignore 'coverage/*' --ignore '#{@config.REPOSTORE_PATH}/*'"
+    end
+
+    desc 'Run the API server to test the client app'
+    task :app_test => :config do
+      puts 'REMEMBER: need to run `rake worker:run:app_test` in another process'
+      sh 'RACK_ENV=test rackup -p 3000'
     end
   end
 end
@@ -57,6 +63,11 @@ namespace :worker do
     desc 'Run the background cloning worker in testing mode'
     task :test => :config do
       sh 'RACK_ENV=test bundle exec shoryuken -r ./workers/clone_repo_worker.rb -C ./workers/shoryuken_test.yml'
+    end
+
+    desc 'Run the background cloning worker in testing mode'
+    task :app_test => :config do
+      sh 'RACK_ENV=app_test bundle exec shoryuken -r ./workers/clone_repo_worker.rb -C ./workers/shoryuken_test.yml'
     end
 
     desc 'Run the background cloning worker in production mode'

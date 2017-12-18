@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'load_all'
-
+require 'http'
 require 'econfig'
 require 'shoryuken'
 
@@ -10,6 +10,8 @@ class CloneRepoWorker
   extend Econfig::Shortcut
   Econfig.env = ENV['RACK_ENV'] || 'development'
   Econfig.root = File.expand_path('..', File.dirname(__FILE__))
+
+  require_relative 'test_helper' if ENV['RACK_ENV'] == 'test'
 
   Shoryuken.sqs_client = Aws::SQS::Client.new(
     access_key_id: config.AWS_ACCESS_KEY_ID,
@@ -20,13 +22,48 @@ class CloneRepoWorker
   include Shoryuken::Worker
   shoryuken_options queue: config.CLONE_QUEUE_URL, auto_delete: true
 
-  def perform(_sqs_msg, worker_request)
-    request = CodePraise::RepoRepresenter.new(OpenStruct.new).from_json worker_request
-    puts "REQUEST: #{request}"
-    gitrepo = CodePraise::GitRepo.new(request)
-    puts "EXISTS: #{gitrepo.exists_locally?}"
-    gitrepo.clone!
-    puts "REQUEST: #{request}"
-    puts "EXISTS: #{gitrepo.exists_locally?}"
+  def perform(_sqs_msg, request_json)
+    clone_request = CodePraise::CloneRequestRepresenter
+                    .new(CodePraise::CloneRequest.new)
+                    .from_json(request_json)
+    gitrepo = CodePraise::GitRepo.new(clone_request.repo)
+    return if gitrepo.exists_locally?
+    gitrepo.clone! { |line| update_progress(clone_request.id, line) }
+  end
+
+  private
+
+  CLONE_PROGRESS = {
+    'START'     =>  15,
+    'Cloning'   =>  30,
+    'remote'    =>  70,
+    'Receiving' =>  85,
+    'Resolving' =>  95,
+    'Checking'  => 100
+  }.freeze
+
+  def update_progress(channel_id, line)
+    percent = progress(line).to_s
+    publish(channel_id, percent)
+  end
+
+  def publish(channel, message)
+    puts "Posting progress: #{message}"
+    HTTP.headers(content_type: 'application/json')
+        .post(
+          "#{CloneRepoWorker.config.API_URL}/faye",
+          body: {
+            channel: "/#{channel}",
+            data: message
+          }.to_json
+        )
+  end
+
+  def progress(line)
+    CLONE_PROGRESS[first_word_of(line)]
+  end
+
+  def first_word_of(line)
+    line.match(/^[A-Za-z]+/).to_s
   end
 end

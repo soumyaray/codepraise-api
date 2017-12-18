@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module CodePraise
+  # Maps over local and remote git repo infrastructure
   class GitRepo
     MAX_SIZE = 1000 # for cloning, analysis, summaries, etc.
 
@@ -12,8 +13,8 @@ module CodePraise
 
     def initialize(repo, config = CodePraise::Api.config)
       @repo = repo
-      origin = Git::RemoteRepo.new(@repo.git_url)
-      @local = Git::LocalRepo.new(origin, config.REPOSTORE_PATH)
+      remote = Git::RemoteRepo.new(@repo.git_url)
+      @local = Git::LocalRepo.new(remote, config.REPOSTORE_PATH)
     end
 
     def local
@@ -36,7 +37,7 @@ module CodePraise
     def clone!
       raise Errors::TooLargeToClone if too_large?
       raise Errors::CannotOverwriteLocalRepo if exists_locally?
-      @local.clone_remote
+      @local.clone_remote { |line| yield line if block_given? }
     end
   end
 end
