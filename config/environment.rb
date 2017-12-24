@@ -27,7 +27,8 @@ module CodePraise
       # Don't specify: Heroku has DATABASE_URL environment variable
     end
 
-    configure do
+    # For all runnable environments (not in_production)
+    configure :development, :test, :app_test, :production do
       require 'sequel'
       DB = Sequel.connect(ENV['DATABASE_URL'])
 
