@@ -127,42 +127,47 @@ namespace :quality do
   end
 end
 
-namespace :queue do
+namespace :queues do
   require 'aws-sdk-sqs'
 
-  desc "Create SQS queue for Shoryuken"
+  desc 'Create SQS queue for Shoryuken'
   task :create => :config do
     sqs = Aws::SQS::Client.new(region: @config.AWS_REGION)
 
-    begin
-      queue = sqs.create_queue(
-        queue_name: @config.CLONE_QUEUE,
-        attributes: {
-          FifoQueue: 'true',
-          ContentBasedDeduplication: 'true'
-        }
-      )
+    puts "Environment: #{@app.environment}"
+    [@config.CLONE_QUEUE, @config.REPORT_QUEUE].each do |queue_name|
+      begin
+        sqs.create_queue(
+          queue_name: queue_name,
+          attributes: {
+            FifoQueue: 'true',
+            ContentBasedDeduplication: 'true'
+          }
+        )
 
-      q_url = sqs.get_queue_url(queue_name: @config.CLONE_QUEUE)
-      puts "Queue created:"
-      puts "Name: #{@config.CLONE_QUEUE}"
-      puts "Region: #{@config.AWS_REGION}"
-      puts "URL: #{q_url.queue_url}"
-      puts "Environment: #{@app.environment}"
-    rescue => e
-      puts "Error creating queue: #{e}"
+        q_url = sqs.get_queue_url(queue_name: queue_name).queue_url
+        puts 'Queue created:'
+        puts "  Name: #{queue_name}"
+        puts "  Region: #{@config.AWS_REGION}"
+        puts "  URL: #{q_url}"
+      rescue StandardError => error
+        puts "Error creating queue: #{error}"
+      end
     end
   end
 
-  desc "Purge messages in SQS queue for Shoryuken"
+  desc 'Purge messages in SQS queue for Shoryuken'
   task :purge => :config do
     sqs = Aws::SQS::Client.new(region: @config.AWS_REGION)
 
-    begin
-      queue = sqs.purge_queue(queue_url: @config.CLONE_QUEUE_URL)
-      puts "Queue #{@config.CLONE_QUEUE} purged"
-    rescue => e
-      puts "Error purging queue: #{e}"
+    [@config.CLONE_QUEUE, @config.REPORT_QUEUE].each do |queue_name|
+      begin
+        q_url = sqs.get_queue_url(queue_name: queue_name).queue_url
+        sqs.purge_queue(queue_url: q_url)
+        puts "Queue #{queue_name} purged"
+      rescue StandardError => error
+        puts "Error purging queue: #{error}"
+      end
     end
   end
 end

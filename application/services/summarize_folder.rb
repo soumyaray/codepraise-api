@@ -20,8 +20,12 @@ module CodePraise
       if input[:gitrepo].exists_locally?
         Right(input)
       else
-        clone_request = clone_request_json(input)
-        CloneRepoWorker.perform_async(clone_request.to_json)
+        clone_request_msg = clone_request_json(input)
+        # TODO:
+        # - send message to worker using notify_clone_listeners?
+        # - send repo to worker and let it find gitrepo
+        CloneRepoWorker.perform_async(clone_request_msg)
+        notify_clone_listeners(clone_request_msg)
         Left(Result.new(:processing, { id: input[:id] }))
       end
     rescue StandardError => error
@@ -42,7 +46,12 @@ module CodePraise
 
     def clone_request_json(input)
       clone_request = CloneRequest.new(input[:repo], input[:id])
-      CloneRequestRepresenter.new(clone_request)
+      CloneRequestRepresenter.new(clone_request).to_json
+    end
+
+    def notify_clone_listeners(message)
+      report_queue = Messaging::Queue.new(app.config.REPORT_QUEUE_URL)
+      report_queue.send(message)
     end
   end
 end
