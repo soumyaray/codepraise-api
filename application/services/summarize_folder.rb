@@ -24,7 +24,7 @@ module CodePraise
         # TODO:
         # - send message to worker using notify_clone_listeners?
         # - send repo to worker and let it find gitrepo
-        CloneRepoWorker.perform_async(clone_request_msg)
+        # CloneRepoWorker.perform_async(clone_request_msg)
         notify_clone_listeners(clone_request_msg)
         Left(Result.new(:processing, { id: input[:id] }))
       end
@@ -50,8 +50,11 @@ module CodePraise
     end
 
     def notify_clone_listeners(message)
-      report_queue = Messaging::Queue.new(app.config.REPORT_QUEUE_URL)
-      report_queue.send(message)
+      app.config.CLONE_LISTENERS.split.each do |queue_name|
+        queue_url = app.config.send(queue_name)
+        report_queue = Messaging::Queue.new(queue_url)
+        report_queue.send(message)
+      end
     end
   end
 end
