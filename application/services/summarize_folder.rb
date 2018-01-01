@@ -21,12 +21,8 @@ module CodePraise
         Right(input)
       else
         clone_request_msg = clone_request_json(input)
-        # TODO:
-        # - send message to worker using notify_clone_listeners?
-        # - send repo to worker and let it find gitrepo
-        # CloneRepoWorker.perform_async(clone_request_msg)
         notify_clone_listeners(clone_request_msg)
-        Left(Result.new(:processing, { id: input[:id] }))
+        Left(Result.new(:processing, id: input[:id]))
       end
     rescue StandardError => error
       puts "ERROR: SummarizeFolder#clone_repo - #{error.inspect}"
