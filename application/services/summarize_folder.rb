@@ -21,7 +21,7 @@ module CodePraise
         Right(input)
       else
         clone_request_msg = clone_request_json(input)
-        notify_clone_listeners(clone_request_msg)
+        notify_clone_listeners(clone_request_msg, input[:config])
         Left(Result.new(:processing, id: input[:id]))
       end
     rescue StandardError => error
@@ -45,9 +45,9 @@ module CodePraise
       CloneRequestRepresenter.new(clone_request).to_json
     end
 
-    def notify_clone_listeners(message)
-      app.config.CLONE_LISTENERS.split.each do |queue_name|
-        queue_url = app.config.send(queue_name)
+    def notify_clone_listeners(message, config)
+      config.CLONE_LISTENERS.split.each do |queue_name|
+        queue_url = config.send(queue_name)
         report_queue = Messaging::Queue.new(queue_url)
         report_queue.send(message)
       end

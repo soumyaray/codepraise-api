@@ -21,6 +21,7 @@ module CodePraise
         request_id = [request.env, request.path, Time.now.to_f].hash
 
         summarize_result = SummarizeFolder.new.call(
+          config: Api.config,
           repo: @repo,
           folder: folder,
           id: request_id
