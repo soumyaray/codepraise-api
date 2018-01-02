@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'aws-sdk-sqs'
+
 module CodePraise
   module Messaging
     ## Queue wrapper for AWS SQS
